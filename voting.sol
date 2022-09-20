@@ -4,52 +4,58 @@ pragma solidity ^0.4.21;
 
 
 
-contract vote{
-  struct candidate{
+contract Election{
+  struct Candidate{
     string name;
-    uint votecount;
+    uint voteCount;
 
   }
-  struct voter{
+  struct Voter{
     bool authorized;
     bool voted;
     uint vote;
   }
   address public owner;
-  string public electionname;
-  mapping(address=>voter)public voters;
-  candidate[] public candidates;
-  uint public totalvotes;
+  string public electionName;
+  mapping(address=>Voter)public voters;
+  Candidate[] public candidates;
+  uint public totalVotes;
 
-  modifier owneronly(){
+  modifier ownerOnly(){
     require(msg.sender== owner);//checks condition
     _;// execute remaining code
   }
-  function vote(string _name1)public {
+  function Election(string _name1)public {
     owner=msg.sender;
-    electionname =_name1;
+    electionName =_name1;
 
   }
-  function addcandidate(string name1)owneronly view  public{
-     candidates.push(candidate(name1,0));
-  }
+  
 
-  function getNumcandidate()public view returns(uint){
+  function getNumCandidate()public view returns(uint){
     return candidates.length;
   }
 
-  function authorize(address person1)owneronly public{
-   voters[person1].authorized==true; 
+  function addCandidate(string _name1)ownerOnly public{
+     candidates.push(Candidate(_name1,0));
   }
-  function vote1(uint voteindex1)public{
+
+  function authorize(address person1)ownerOnly public{
+   voters[person1].authorized = true; 
+  }
+  function vote(uint voteindex1)public{
     require(!voters[msg.sender].voted);
     require(voters[msg.sender].authorized);
-    voters[msg.sender].vote=-voteindex1;
+
+
+    voters[msg.sender].vote = voteindex1;
     voters[msg.sender].voted=true;
-    candidates[voteindex1].votecount==1;
-    totalvotes+=1;
+
+    candidates[voteindex1].voteCount+=1;
+    totalVotes+=1;
   }
-  function end()owneronly public{
+
+  function end()ownerOnly public{
     selfdestruct(owner);
   }
 }
